@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thribhuvan Serman - Portfolio</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Open+Sans:wght@400;500;600&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Open Sans', 'sans-serif'],
+                        heading: ['Poppins', 'sans-serif'],
+                        serif: ['Playfair Display', 'serif'],
+                    },
+                    colors: {
+                        dark: '#000000',      // Pure Black
+                        primary: '#171717',   // Neutral 900
+                        secondary: '#404040', // Neutral 700
+                        accent: '#737373',    // Neutral 500
+                        surface: '#ffffff',   
+                        background: '#ffffff',
+                    },
+                    animation: {
+                        'marquee': 'marquee 25s linear infinite',
+                        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                    },
+                    keyframes: {
+                        marquee: {
+                            '0%': { transform: 'translateX(0%)' },
+                            '100%': { transform: 'translateX(-100%)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Custom Cursor */
+        body { cursor: none; }
+        .cursor-dot,
+        .cursor-outline {
+            position: fixed;
+            top: 0;
+            left: 0;
+            transform: translate(-50%, -50%);
+            border-radius: 50%;
+            z-index: 9999;
+            pointer-events: none;
+        }
+        .cursor-dot {
+            width: 8px;
+            height: 8px;
+            background-color: black;
+        }
+        .cursor-outline {
+            width: 40px;
+            height: 40px;
+            border: 1px solid rgba(0, 0, 0, 0.5);
+            transition: width 0.2s, height 0.2s, background-color 0.2s;
+        }
+        /* Cursor Hover State */
+        body.hovering .cursor-outline {
+            width: 60px;
+            height: 60px;
+            background-color: rgba(0, 0, 0, 0.05);
+            border-color: transparent;
+        }
+
+        /* Film Grain Overlay */
+        .noise-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 50;
+            opacity: 0.05;
+            background: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+        }
+
+        /* Preloader */
+        #preloader {
+            transform: translateY(0);
+        }
+        #preloader.loaded {
+            transform: translateY(-100%);
+        }
+
+        /* Scroll Reveal Utility */
+        .reveal-on-scroll {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s cubic-bezier(0.5, 0, 0, 1);
+        }
+        .reveal-on-scroll.is-visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* 3D Tilt Container */
+        .tilt-card {
+            transform-style: preserve-3d;
+            transform: perspective(1000px);
+        }
+        .tilt-inner {
+            transform: translateZ(20px);
+        }
+
+        /* Nav Link Animations */
+        .nav-link {
+            position: relative;
+        }
+        .nav-link::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 0;
+            height: 1px;
+            background-color: black;
+            transition: width 0.3s ease;
+        }
+        .nav-link:hover::before {
+            width: 12px;
+        }
+        .nav-link:hover span {
+            transform: translateX(16px);
+            color: black;
+        }
+
+        /* Scrollbars */
+        .content-area::-webkit-scrollbar { width: 6px; }
+        .content-area::-webkit-scrollbar-track { background: #fafafa; }
+        .content-area::-webkit-scrollbar-thumb { background: #d4d4d4; border-radius: 3px; }
+        .content-area::-webkit-scrollbar-thumb:hover { background: #a3a3a3; }
+        
+        .timeline-line {
+            position: absolute; left: 24px; top: 24px; bottom: 0; width: 1px;
+            background: #e5e5e5; z-index: 0;
+        }
+    </style>
+</head>
+<body class="bg-background text-neutral-800 font-sans selection:bg-black selection:text-white overflow-x-hidden">
+
+    <!-- PRELOADER -->
+    <div id="preloader" class="fixed inset-0 z-[100] bg-black flex flex-col items-center justify-center text-white transition-transform duration-1000 ease-in-out delay-500">
+        <div class="text-center animate-pulse-slow">
+            <h1 class="font-heading text-6xl font-bold tracking-tighter mb-4">TS</h1>
+            <p class="text-xs uppercase tracking-[0.5em] text-neutral-500">Portfolio Loading</p>
+        </div>
+        <div class="mt-8 w-64 h-[1px] bg-neutral-800 relative overflow-hidden">
+            <div id="loader-bar" class="absolute inset-0 bg-white w-0 h-full transition-all duration-[1500ms] ease-out"></div>
+        </div>
+    </div>
+
+    <!-- Custom Cursor Elements -->
+    <div class="cursor-dot hidden md:block"></div>
+    <div class="cursor-outline hidden md:block"></div>
+
+    <!-- Noise Overlay -->
+    <div class="noise-overlay"></div>
+
+    <!-- ===================== HOME PAGE VIEW ===================== -->
+    <div id="home-page" class="h-screen overflow-hidden flex flex-col md:flex-row w-full transition-opacity duration-300 opacity-0">
+        
+        <!-- LEFT COLUMN: Profile & Sidebar -->
+        <aside class="w-full md:w-[350px] lg:w-[400px] bg-dark text-white flex flex-col h-auto md:h-full shrink-0 relative z-20 shadow-2xl overflow-hidden">
+            
+            <!-- Background Layer -->
+            <div class="absolute inset-0 w-full h-full overflow-hidden opacity-20 pointer-events-none z-0">
+                <div class="absolute -top-24 -right-24 w-64 h-64 rounded-full bg-neutral-800 blur-3xl"></div>
+                <div class="absolute bottom-0 left-0 w-80 h-80 rounded-full bg-neutral-900 blur-3xl"></div>
+            </div>
+
+            <!-- Scrollable Content Wrapper -->
+            <div class="relative z-10 w-full h-full md:overflow-y-auto sidebar-scroll">
+                <div class="p-8 md:p-12 text-center">
+                    <div class="w-44 h-44 mx-auto rounded-full p-1 bg-gradient-to-tr from-neutral-500 to-black mb-6 shadow-lg shadow-black/20">
+                        <div class="w-full h-full rounded-full overflow-hidden border-4 border-black bg-neutral-900">
+                            <img src="https://ui-avatars.com/api/?name=Thribhuvan+Serman&background=000000&color=fff&size=512&font-size=0.33" alt="Thribhuvan Serman" class="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-700">
+                        </div>
+                    </div>
+                    
+                    <h1 class="font-heading text-3xl font-bold mb-2 tracking-tight text-white">Thribhuvan Serman</h1>
+                    <div class="inline-flex items-center px-4 py-1.5 rounded-full bg-neutral-900 border border-neutral-800 backdrop-blur-sm mb-6">
+                        <i class="fas fa-map-marker-alt text-white text-xs mr-2"></i>
+                        <p class="text-neutral-400 text-xs font-semibold tracking-wide">Theni, Tamil Nadu</p>
+                    </div>
+                    
+                    <div class="flex justify-center gap-4 mb-10">
+                        <!-- GitHub Link Added Here -->
+                        <a href="https://github.com/3bhu-1" target="_blank" class="hoverable w-10 h-10 rounded-xl bg-neutral-900 flex items-center justify-center text-neutral-400 hover:bg-white hover:text-black transition-all duration-300 shadow-lg border border-neutral-800 group" title="GitHub Profile">
+                            <i class="fab fa-github text-lg group-hover:scale-110 transition-transform"></i>
+                        </a>
+
+                        <a href="https://www.themoviedb.org/person/4049155-thribhuvan" target="_blank" class="hoverable w-10 h-10 rounded-xl bg-neutral-900 flex items-center justify-center text-neutral-400 hover:bg-white hover:text-black transition-all duration-300 shadow-lg border border-neutral-800 group" title="TMDB Profile">
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/8/89/Tmdb.new.logo.svg" alt="TMDB" class="w-5 h-3 opacity-70 group-hover:opacity-100 group-hover:brightness-0 transition-all">
+                        </a>
+                        <a href="tel:+919788249455" class="hoverable w-10 h-10 rounded-xl bg-neutral-900 flex items-center justify-center text-neutral-400 hover:bg-white hover:text-black transition-all duration-300 shadow-lg border border-neutral-800">
+                            <i class="fas fa-phone text-sm"></i>
+                        </a>
+                        <a href="mailto:thribhuvanserman@gmail.com" class="hoverable w-10 h-10 rounded-xl bg-neutral-900 flex items-center justify-center text-neutral-400 hover:bg-white hover:text-black transition-all duration-300 shadow-lg border border-neutral-800">
+                            <i class="fas fa-envelope text-sm"></i>
+                        </a>
+                    </div>
+
+                    <div class="w-full border-t border-neutral-800 pt-8">
+                        <nav class="flex flex-col space-y-2 text-left px-4">
+                            <a href="#about" class="hoverable nav-link px-4 py-3 rounded-lg text-neutral-400 hover:text-white transition-all duration-300 text-sm font-medium flex items-center group">
+                                <span class="transition-transform duration-300">About Me</span>
+                            </a>
+                            <a href="#education" class="hoverable nav-link px-4 py-3 rounded-lg text-neutral-400 hover:text-white transition-all duration-300 text-sm font-medium flex items-center group">
+                                <span class="transition-transform duration-300">Education</span>
+                            </a>
+                            <a href="#experience" class="hoverable nav-link px-4 py-3 rounded-lg text-neutral-400 hover:text-white transition-all duration-300 text-sm font-medium flex items-center group">
+                                <span class="transition-transform duration-300">Experience</span>
+                            </a>
+                            <a href="#projects" class="hoverable nav-link px-4 py-3 rounded-lg text-neutral-400 hover:text-white transition-all duration-300 text-sm font-medium flex items-center group">
+                                <span class="transition-transform duration-300">Projects</span>
+                            </a>
+                            <a href="#skills" class="hoverable nav-link px-4 py-3 rounded-lg text-neutral-400 hover:text-white transition-all duration-300 text-sm font-medium flex items-center group">
+                                <span class="transition-transform duration-300">Skills</span>
+                            </a>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- RIGHT COLUMN: Main Content -->
+        <main class="flex-1 h-full overflow-y-auto content-area bg-background relative scroll-smooth">
+            
+            <div class="md:hidden bg-white/80 backdrop-blur-md p-4 border-b border-neutral-200 sticky top-0 z-30 shadow-sm flex justify-between items-center">
+                <span class="font-bold text-lg font-heading text-black">Portfolio</span>
+                <div class="w-8 h-8 rounded-full bg-black"></div>
+            </div>
+
+            <!-- Creative Marquee -->
+            <div class="w-full bg-neutral-50 border-b border-neutral-100 py-3 overflow-hidden">
+                <div class="flex whitespace-nowrap animate-marquee group">
+                    <span class="text-xs font-bold tracking-[0.3em] uppercase text-neutral-400 mx-8 group-hover:text-black transition-colors duration-500">Filmmaker</span>
+                    <span class="text-xs font-bold tracking-[0.3em] uppercase text-neutral-400 mx-8 group-hover:text-black transition-colors duration-500">Data Analyst</span>
+                    <span class="text-xs font-bold tracking-[0.3em] uppercase text-neutral-400 mx-8 group-hover:text-black transition-colors duration-500">Creative Strategist</span>
+                    <span class="text-xs font-bold tracking-[0.3em] uppercase text-neutral-400 mx-8 group-hover:text-black transition-colors duration-500">Director</span>
+                    <span class="text-xs font-bold tracking-[0.3em] uppercase text-neutral-400 mx-8 group-hover:text-black transition-colors duration-500">Designer</span>
+                    <!-- Repeat for smooth loop -->
+                    <span class="text-xs font-bold tracking-[0.3em] uppercase text-neutral-400 mx-8 group-hover:text-black transition-colors duration-500">Filmmaker</span>
+                    <span class="text-xs font-bold tracking-[0.3em] uppercase text-neutral-400 mx-8 group-hover:text-black transition-colors duration-500">Data Analyst</span>
+                    <span class="text-xs font-bold tracking-[0.3em] uppercase text-neutral-400 mx-8 group-hover:text-black transition-colors duration-500">Creative Strategist</span>
+                    <span class="text-xs font-bold tracking-[0.3em] uppercase text-neutral-400 mx-8 group-hover:text-black transition-colors duration-500">Director</span>
+                    <span class="text-xs font-bold tracking-[0.3em] uppercase text-neutral-400 mx-8 group-hover:text-black transition-colors duration-500">Designer</span>
+                     <span class="text-xs font-bold tracking-[0.3em] uppercase text-neutral-400 mx-8 group-hover:text-black transition-colors duration-500">Filmmaker</span>
+                    <span class="text-xs font-bold tracking-[0.3em] uppercase text-neutral-400 mx-8 group-hover:text-black transition-colors duration-500">Data Analyst</span>
+                    <span class="text-xs font-bold tracking-[0.3em] uppercase text-neutral-400 mx-8 group-hover:text-black transition-colors duration-500">Creative Strategist</span>
+                    <span class="text-xs font-bold tracking-[0.3em] uppercase text-neutral-400 mx-8 group-hover:text-black transition-colors duration-500">Director</span>
+                    <span class="text-xs font-bold tracking-[0.3em] uppercase text-neutral-400 mx-8 group-hover:text-black transition-colors duration-500">Designer</span>
+                </div>
+            </div>
+
+            <div class="p-6 md:p-12 lg:p-16 max-w-5xl mx-auto space-y-24">
+
+                <!-- ABOUT SECTION (Editorial Style) -->
+                <section id="about" class="reveal-on-scroll">
+                    <div class="flex items-center mb-6">
+                         <span class="text-xs font-bold tracking-[0.2em] uppercase text-neutral-400 mr-4">01 // ABOUT ME</span>
+                         <div class="h-[1px] bg-black/10 flex-1"></div>
+                    </div>
+                    <div class="bg-white py-4 relative">
+                        <i class="fas fa-quote-left text-4xl text-neutral-100 absolute -top-4 -left-4 -z-10"></i>
+                        <h2 class="font-serif text-3xl md:text-5xl leading-tight text-neutral-800 mb-6">
+                            I bridge the gap between <span class="italic font-bold text-black border-b-2 border-black pb-1">data analytics</span> & <span class="italic font-bold text-black border-b-2 border-black pb-1">cinematic storytelling</span>.
+                        </h2>
+                        <p class="text-lg text-neutral-500 leading-relaxed font-light max-w-3xl">
+                            Currently a <strong class="text-black font-medium">BBA Strategy & Business Analytics</strong> student at Christ University. I don't just analyze numbers; I craft narratives that drive decisions. From directing short films to mining data sets, my work is about finding the human story in the abstract.
+                        </p>
+                    </div>
+                </section>
+
+                <!-- EDUCATION SECTION -->
+                <section id="education" class="reveal-on-scroll">
+                     <div class="flex items-center mb-10 border-b border-neutral-100 pb-4">
+                        <span class="text-xs font-bold tracking-[0.2em] uppercase text-neutral-400">02 // EDUCATION</span>
+                    </div>
+                    
+                    <div class="relative pl-4 space-y-12">
+                        
+                        <div class="relative z-10 flex gap-8 group">
+                            <div class="flex-shrink-0 mt-1">
+                                <div class="w-12 h-12 rounded-full bg-black text-white flex items-center justify-center shadow-md">
+                                    <span class="font-heading font-bold text-sm">01</span>
+                                </div>
+                            </div>
+                            <div class="flex-1 pb-8 hover:translate-x-2 transition-transform duration-300 cursor-default">
+                                <div class="flex flex-col md:flex-row md:items-center justify-between mb-2">
+                                    <h3 class="text-2xl font-bold text-black">BBA Strategy & Business Analytics</h3>
+                                    <span class="text-xs font-bold uppercase tracking-wider text-neutral-400">2023 - Present</span>
+                                </div>
+                                <p class="text-neutral-600 font-medium">Christ University • Bangalore</p>
+                            </div>
+                        </div>
+
+                        <div class="relative z-10 flex gap-8 group">
+                            <div class="flex-shrink-0 mt-1">
+                                <div class="w-12 h-12 rounded-full bg-neutral-100 text-black flex items-center justify-center shadow-md border border-neutral-200">
+                                    <span class="font-heading font-bold text-sm">02</span>
+                                </div>
+                            </div>
+                            <div class="flex-1 pb-8 hover:translate-x-2 transition-transform duration-300 cursor-default">
+                                 <div class="flex flex-col md:flex-row md:items-center justify-between mb-2">
+                                    <h3 class="text-2xl font-bold text-black">Science Stream (PCM CS)</h3>
+                                    <span class="text-xs font-bold uppercase tracking-wider text-neutral-400">2017 - 2023</span>
+                                </div>
+                                <p class="text-neutral-600 font-medium">Montfort Anglo Indian School • Yercaud</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- EXPERIENCE SECTION -->
+                <section id="experience" class="reveal-on-scroll">
+                     <div class="flex items-center mb-10 border-b border-neutral-100 pb-4">
+                        <span class="text-xs font-bold tracking-[0.2em] uppercase text-neutral-400">03 // EXPERIENCE</span>
+                    </div>
+
+                    <div class="grid md:grid-cols-2 gap-8">
+                        <div class="space-y-6">
+                            <h3 class="font-serif italic text-2xl text-black mb-6">Professional</h3>
+                            
+                            <div class="hoverable bg-white p-8 border border-neutral-100 hover:border-black hover:shadow-xl transition-all duration-500 group">
+                                <div class="flex justify-between items-start mb-4">
+                                    <div>
+                                        <h4 class="font-bold text-xl text-black group-hover:translate-x-1 transition-transform">Volunteer</h4>
+                                        <p class="text-xs text-neutral-400 mt-1 uppercase tracking-wide">Vara Foundations</p>
+                                    </div>
+                                </div>
+                                <p class="text-sm text-neutral-600 leading-relaxed">Weekly engagements with special students to teach basic maths and alphabets.</p>
+                            </div>
+
+                            <div class="hoverable bg-white p-8 border border-neutral-100 hover:border-black hover:shadow-xl transition-all duration-500 group">
+                                <div class="flex justify-between items-start mb-4">
+                                    <div>
+                                        <h4 class="font-bold text-xl text-black group-hover:translate-x-1 transition-transform">Marketing Intern</h4>
+                                        <p class="text-xs text-neutral-400 mt-1 uppercase tracking-wide">Broadway Cinemas</p>
+                                    </div>
+                                </div>
+                                <p class="text-sm text-neutral-600 leading-relaxed">Managed the social media account and curated content strategy.</p>
+                            </div>
+                        </div>
+
+                        <div class="space-y-6">
+                            <h3 class="font-serif italic text-2xl text-black mb-6">Leadership</h3>
+                            
+                            <div class="hoverable bg-white p-8 border border-neutral-100 hover:border-black hover:shadow-xl transition-all duration-500 group">
+                                <div class="flex justify-between items-start mb-4">
+                                    <div>
+                                        <h4 class="font-bold text-xl text-black group-hover:translate-x-1 transition-transform">Media Dept. Head</h4>
+                                        <p class="text-xs text-neutral-400 mt-1 uppercase tracking-wide">Physical Education Dept, Christ</p>
+                                    </div>
+                                </div>
+                                <p class="text-sm text-neutral-600 leading-relaxed">Coverage of Annual Sports Meets.</p>
+                            </div>
+
+                            <div class="hoverable bg-white p-8 border border-neutral-100 hover:border-black hover:shadow-xl transition-all duration-500 group">
+                                <div class="flex justify-between items-start mb-4">
+                                    <div>
+                                        <h4 class="font-bold text-xl text-black group-hover:translate-x-1 transition-transform">School Pupil Leader</h4>
+                                        <p class="text-xs text-neutral-400 mt-1 uppercase tracking-wide">Montfort Student Committee</p>
+                                    </div>
+                                </div>
+                                <p class="text-sm text-neutral-600 leading-relaxed">Led student body and events.</p>
+                            </div>
+
+                             <div class="hoverable bg-white p-8 border border-neutral-100 hover:border-black hover:shadow-xl transition-all duration-500 group">
+                                <div class="flex justify-between items-start mb-4">
+                                    <div>
+                                        <h4 class="font-bold text-xl text-black group-hover:translate-x-1 transition-transform">Secretary</h4>
+                                        <p class="text-xs text-neutral-400 mt-1 uppercase tracking-wide">Multi Media Club, Montfort</p>
+                                    </div>
+                                </div>
+                                <p class="text-sm text-neutral-600 leading-relaxed">Designed school magazine layout.</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                 <!-- PROJECTS SECTION -->
+                 <section id="projects" class="reveal-on-scroll">
+                     <div class="flex items-center mb-10 border-b border-neutral-100 pb-4">
+                        <span class="text-xs font-bold tracking-[0.2em] uppercase text-neutral-400">04 // PROJECTS</span>
+                    </div>
+                    
+                    <div class="grid gap-8">
+                        <!-- Card 1: Short Films -->
+                        <div onclick="navigateTo('short-films-page')" class="hoverable cursor-pointer group tilt-card h-64 md:h-80 w-full relative grayscale hover:grayscale-0 transition-all duration-700">
+                            <div class="absolute inset-0 bg-neutral-900 rounded-2xl overflow-hidden shadow-2xl transition-all duration-300 border border-neutral-800">
+                                <div class="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1485846234645-a62644f84728?q=80&w=2059&auto=format&fit=crop')] bg-cover bg-center opacity-40 group-hover:opacity-100 transition-opacity duration-700"></div>
+                                <div class="absolute inset-0 flex flex-col items-center justify-center p-6 text-center tilt-inner bg-black/40 group-hover:bg-black/10 transition-colors">
+                                    <div class="w-20 h-20 bg-white rounded-full flex items-center justify-center mb-6 transform group-hover:scale-110 transition-transform duration-500">
+                                        <i class="fas fa-film text-3xl text-black"></i>
+                                    </div>
+                                    <h3 class="text-4xl md:text-5xl font-bold text-white font-heading tracking-tighter">Short Films</h3>
+                                    <p class="text-neutral-400 mt-4 text-xs font-bold uppercase tracking-[0.3em] group-hover:text-white transition-colors">Written & Directed</p>
+                                    <span class="mt-6 px-6 py-2 border border-white/30 text-white text-xs uppercase tracking-widest opacity-0 group-hover:opacity-100 transform translate-y-4 group-hover:translate-y-0 transition-all duration-500">View Collection</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Card 2: Ad Films -->
+                        <div onclick="navigateTo('ad-films-page')" class="hoverable cursor-pointer group tilt-card h-64 md:h-80 w-full relative grayscale hover:grayscale-0 transition-all duration-700">
+                            <div class="absolute inset-0 bg-white rounded-2xl overflow-hidden shadow-2xl border border-neutral-200 transition-all duration-300">
+                                <div class="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1542204165-65bf26472b9b?q=80&w=1974&auto=format&fit=crop')] bg-cover bg-center opacity-40 group-hover:opacity-100 transition-opacity duration-700"></div>
+                                <div class="absolute inset-0 flex flex-col items-center justify-center p-6 text-center tilt-inner bg-white/40 group-hover:bg-white/10 transition-colors">
+                                    <div class="w-20 h-20 bg-black rounded-full flex items-center justify-center mb-6 transform group-hover:scale-110 transition-transform duration-500">
+                                        <i class="fas fa-ad text-3xl text-white"></i>
+                                    </div>
+                                    <h3 class="text-4xl md:text-5xl font-bold text-black font-heading tracking-tighter">Ad Films</h3>
+                                    <p class="text-neutral-500 mt-4 text-xs font-bold uppercase tracking-[0.3em] group-hover:text-black transition-colors">Commercial Concepts</p>
+                                    <span class="mt-6 px-6 py-2 border border-black/30 text-black text-xs uppercase tracking-widest opacity-0 group-hover:opacity-100 transform translate-y-4 group-hover:translate-y-0 transition-all duration-500">View Collection</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Card 3: Designs -->
+                        <div onclick="navigateTo('designs-page')" class="hoverable cursor-pointer group tilt-card h-64 md:h-80 w-full relative grayscale hover:grayscale-0 transition-all duration-700">
+                            <div class="absolute inset-0 bg-neutral-100 rounded-2xl overflow-hidden shadow-xl border border-neutral-200 transition-all duration-300">
+                                <div class="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1964&auto=format&fit=crop')] bg-cover bg-center opacity-40 group-hover:opacity-100 transition-opacity duration-700"></div>
+                                <div class="absolute inset-0 flex flex-col items-center justify-center p-6 text-center tilt-inner bg-white/40 group-hover:bg-white/10 transition-colors">
+                                    <div class="w-20 h-20 border-2 border-black rounded-full flex items-center justify-center mb-6 transform group-hover:rotate-180 transition-transform duration-700">
+                                        <i class="fas fa-palette text-3xl text-black"></i>
+                                    </div>
+                                    <h3 class="text-4xl md:text-5xl font-bold text-black font-heading tracking-tighter">Visual Designs</h3>
+                                    <p class="text-neutral-500 mt-4 text-xs font-bold uppercase tracking-[0.3em] group-hover:text-black transition-colors">Apparel & Slides</p>
+                                    <span class="mt-6 px-6 py-2 border border-black/30 text-black text-xs uppercase tracking-widest opacity-0 group-hover:opacity-100 transform translate-y-4 group-hover:translate-y-0 transition-all duration-500">View Collection</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Card 4: Code (NEW) -->
+                        <div onclick="navigateTo('code-page')" class="hoverable cursor-pointer group tilt-card h-64 md:h-80 w-full relative grayscale hover:grayscale-0 transition-all duration-700">
+                            <div class="absolute inset-0 bg-neutral-900 rounded-2xl overflow-hidden shadow-2xl transition-all duration-300 border border-neutral-800">
+                                <div class="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1555066931-4365d14bab8c?q=80&w=2070&auto=format&fit=crop')] bg-cover bg-center opacity-40 group-hover:opacity-100 transition-opacity duration-700"></div>
+                                <div class="absolute inset-0 flex flex-col items-center justify-center p-6 text-center tilt-inner bg-black/40 group-hover:bg-black/10 transition-colors">
+                                    <div class="w-20 h-20 bg-white rounded-full flex items-center justify-center mb-6 transform group-hover:scale-110 transition-transform duration-500">
+                                        <i class="fas fa-code text-3xl text-black"></i>
+                                    </div>
+                                    <h3 class="text-4xl md:text-5xl font-bold text-white font-heading tracking-tighter">Code</h3>
+                                    <p class="text-neutral-400 mt-4 text-xs font-bold uppercase tracking-[0.3em] group-hover:text-white transition-colors">Repositories</p>
+                                    <span class="mt-6 px-6 py-2 border border-white/30 text-white text-xs uppercase tracking-widest opacity-0 group-hover:opacity-100 transform translate-y-4 group-hover:translate-y-0 transition-all duration-500">View Projects</span>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </section>
+
+                <!-- SKILLS SECTION -->
+                <section id="skills" class="reveal-on-scroll">
+                     <div class="flex items-center mb-10 border-b border-neutral-100 pb-4">
+                        <span class="text-xs font-bold tracking-[0.2em] uppercase text-neutral-400">05 // SKILLS</span>
+                    </div>
+                    
+                    <div class="grid md:grid-cols-2 gap-8 mb-8">
+                        <div class="bg-neutral-100 p-8 rounded-2xl border border-neutral-200 hover:shadow-lg transition-shadow duration-300">
+                            <h3 class="font-bold mb-6 text-neutral-400 uppercase tracking-widest text-xs">Data & Analytics</h3>
+                            <div class="flex flex-wrap gap-2">
+                                <span class="px-4 py-2 bg-white border border-neutral-200 rounded-lg text-sm font-medium hover:bg-black hover:text-white transition-colors cursor-default">Python</span>
+                                <span class="px-4 py-2 bg-white border border-neutral-200 rounded-lg text-sm font-medium hover:bg-black hover:text-white transition-colors cursor-default">Power BI</span>
+                                <span class="px-4 py-2 bg-white border border-neutral-200 rounded-lg text-sm font-medium hover:bg-black hover:text-white transition-colors cursor-default">Orange Data Mining</span>
+                                <span class="px-4 py-2 bg-white border border-neutral-200 rounded-lg text-sm font-medium hover:bg-black hover:text-white transition-colors cursor-default">JMP</span>
+                                <span class="px-4 py-2 bg-white border border-neutral-200 rounded-lg text-sm font-medium hover:bg-black hover:text-white transition-colors cursor-default">MS Office</span>
+                            </div>
+                        </div>
+
+                        <div class="bg-neutral-100 p-8 rounded-2xl border border-neutral-200 hover:shadow-lg transition-shadow duration-300">
+                            <h3 class="font-bold mb-6 text-neutral-400 uppercase tracking-widest text-xs">Creative Suite</h3>
+                            <div class="flex flex-wrap gap-2">
+                                <span class="px-4 py-2 bg-white border border-neutral-200 rounded-lg text-sm font-medium hover:bg-black hover:text-white transition-colors cursor-default">Da Vinci Resolve</span>
+                                <span class="px-4 py-2 bg-white border border-neutral-200 rounded-lg text-sm font-medium hover:bg-black hover:text-white transition-colors cursor-default">Adobe Premiere Pro</span>
+                                <span class="px-4 py-2 bg-white border border-neutral-200 rounded-lg text-sm font-medium hover:bg-black hover:text-white transition-colors cursor-default">Canva</span>
+                                <span class="px-4 py-2 bg-white border border-neutral-200 rounded-lg text-sm font-medium hover:bg-black hover:text-white transition-colors cursor-default">Graphic Design</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Certifications Block (Restored) -->
+                    <div class="bg-neutral-50 p-8 rounded-2xl border border-neutral-200 hover:shadow-lg transition-shadow duration-300">
+                        <h3 class="font-bold mb-6 text-black uppercase tracking-widest text-xs">Certifications</h3>
+                        <div class="flex flex-wrap gap-3">
+                            <span class="px-4 py-3 bg-white text-sm font-medium border border-neutral-200 rounded-full text-neutral-600 shadow-sm flex items-center hover:border-black transition-colors">
+                                <i class="fas fa-certificate text-black mr-3"></i> Graphic Design Masterclass
+                            </span>
+                            <span class="px-4 py-3 bg-white text-sm font-medium border border-neutral-200 rounded-full text-neutral-600 shadow-sm flex items-center hover:border-black transition-colors">
+                                <i class="fas fa-certificate text-neutral-500 mr-3"></i> Python for Data Analytics
+                            </span>
+                        </div>
+                    </div>
+                </section>
+                
+                <!-- NEW CONTACT SECTION -->
+                <section class="py-12 reveal-on-scroll">
+                    <div class="bg-black text-white p-10 md:p-16 rounded-3xl text-center relative overflow-hidden group">
+                        <div class="absolute inset-0 bg-neutral-900 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                        <h2 class="relative z-10 font-heading text-4xl md:text-6xl font-bold mb-6">Let's Create Together.</h2>
+                        <p class="relative z-10 text-neutral-400 max-w-xl mx-auto mb-10 text-lg">Whether it's a data-driven strategy or a compelling visual narrative, I'm ready to bring ideas to life.</p>
+                        <a href="mailto:thribhuvanserman@gmail.com" class="relative z-10 hoverable inline-block px-8 py-4 bg-white text-black font-bold rounded-full hover:scale-105 transition-transform duration-300">
+                            Get In Touch <i class="fas fa-arrow-right ml-2"></i>
+                        </a>
+                    </div>
+                </section>
+
+            </div>
+            
+            <footer class="bg-neutral-50 border-t border-neutral-200 p-8 text-center text-xs text-neutral-400 uppercase tracking-widest">
+                &copy; 2026 Thribhuvan Serman • Portfolio
+            </footer>
+        </main>
+    </div>
+
+    <!-- Hidden Sub-pages (Short Films, Ads, Designs, Code) -->
+    
+    <!-- Short Films Page -->
+    <div id="short-films-page" class="hidden min-h-screen w-full bg-white transition-opacity duration-300">
+        <div class="max-w-7xl mx-auto p-6 md:p-12">
+            <div class="flex flex-col md:flex-row items-center justify-between mb-12">
+                <div class="flex items-center gap-4 mb-4 md:mb-0">
+                    <button onclick="navigateTo('home-page')" class="hoverable w-12 h-12 rounded-full bg-black text-white flex items-center justify-center hover:scale-110 transition-transform shadow-lg cursor-pointer">
+                        <i class="fas fa-arrow-left"></i>
+                    </button>
+                    <div>
+                        <h1 class="font-heading text-4xl font-bold text-black">Short Films</h1>
+                    </div>
+                </div>
+            </div>
+            <div class="grid md:grid-cols-2 gap-10">
+                 <div class="bg-neutral-50 rounded-2xl overflow-hidden border border-neutral-200 shadow-sm hover:shadow-xl transition-all duration-300 group">
+                    <div class="aspect-video bg-black relative cursor-pointer overflow-hidden" onclick="loadVideo(this, '5aWW3bfR7A4')">
+                        <img src="https://img.youtube.com/vi/5aWW3bfR7A4/maxresdefault.jpg" alt="Thumbnail" class="w-full h-full object-cover grayscale group-hover:grayscale-0 opacity-90 group-hover:opacity-100 transition-all duration-500">
+                        <div class="absolute inset-0 flex items-center justify-center"><i class="fas fa-play text-white text-4xl"></i></div>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="font-bold text-xl mb-1 text-black">paar the uncertAinty of life</h3>
+                        <p class="text-xs font-bold text-neutral-400 uppercase tracking-widest">BUT THE CINEPHILE IS A NEUROTIC</p>
+                    </div>
+                </div>
+                 <div class="bg-neutral-50 rounded-2xl overflow-hidden border border-neutral-200 shadow-sm hover:shadow-xl transition-all duration-300 group">
+                    <div class="aspect-video bg-black relative cursor-pointer overflow-hidden" onclick="loadVideo(this, 'ICswZqLNsh4')">
+                        <img src="https://img.youtube.com/vi/ICswZqLNsh4/maxresdefault.jpg" alt="Thumbnail" class="w-full h-full object-cover grayscale group-hover:grayscale-0 opacity-90 group-hover:opacity-100 transition-all duration-500">
+                        <div class="absolute inset-0 flex items-center justify-center"><i class="fas fa-play text-white text-4xl"></i></div>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="font-bold text-xl mb-1 text-black">breathe</h3>
+                        <p class="text-xs font-bold text-neutral-400 uppercase tracking-widest">LIFT OF LIFE</p>
+                    </div>
+                </div>
+                 <div class="bg-neutral-50 rounded-2xl overflow-hidden border border-neutral-200 shadow-sm hover:shadow-xl transition-all duration-300 group">
+                    <div class="aspect-video bg-black relative cursor-pointer overflow-hidden" onclick="loadVideo(this, 'IfA-If1mkyI')">
+                        <img src="https://img.youtube.com/vi/IfA-If1mkyI/maxresdefault.jpg" alt="Thumbnail" class="w-full h-full object-cover grayscale group-hover:grayscale-0 opacity-90 group-hover:opacity-100 transition-all duration-500">
+                        <div class="absolute inset-0 flex items-center justify-center"><i class="fas fa-play text-white text-4xl"></i></div>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="font-bold text-xl mb-1 text-black">Siru Pazhakkam</h3>
+                        <p class="text-xs font-bold text-neutral-400 uppercase tracking-widest">A MINUTE TO RELIEVE, RETHINK.</p>
+                    </div>
+                </div>
+                 <div class="bg-neutral-50 rounded-2xl overflow-hidden border border-neutral-200 shadow-sm hover:shadow-xl transition-all duration-300 group">
+                    <div class="aspect-video bg-black relative cursor-pointer overflow-hidden" onclick="loadVideo(this, 'xOfQu38epAU')">
+                        <img src="https://img.youtube.com/vi/xOfQu38epAU/maxresdefault.jpg" alt="Thumbnail" class="w-full h-full object-cover grayscale group-hover:grayscale-0 opacity-90 group-hover:opacity-100 transition-all duration-500">
+                        <div class="absolute inset-0 flex items-center justify-center"><i class="fas fa-play text-white text-4xl"></i></div>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="font-bold text-xl mb-1 text-black">Next Step?</h3>
+                        <p class="text-xs font-bold text-neutral-400 uppercase tracking-widest">TO - DOOO</p>
+                    </div>
+                </div>
+                 <div class="bg-neutral-50 rounded-2xl overflow-hidden border border-neutral-200 shadow-sm hover:shadow-xl transition-all duration-300 group">
+                    <div class="aspect-video bg-black relative cursor-pointer overflow-hidden" onclick="loadVideo(this, '_YuEHD_9JlI')">
+                        <img src="https://img.youtube.com/vi/_YuEHD_9JlI/maxresdefault.jpg" alt="Thumbnail" class="w-full h-full object-cover grayscale group-hover:grayscale-0 opacity-90 group-hover:opacity-100 transition-all duration-500">
+                        <div class="absolute inset-0 flex items-center justify-center"><i class="fas fa-play text-white text-4xl"></i></div>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="font-bold text-xl mb-1 text-black">Project Maggi</h3>
+                        <p class="text-xs font-bold text-neutral-400 uppercase tracking-widest">2 MINUTES TO COOK</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Ad Films Page -->
+    <div id="ad-films-page" class="hidden min-h-screen w-full bg-white transition-opacity duration-300">
+        <div class="max-w-7xl mx-auto p-6 md:p-12">
+            <div class="flex flex-col md:flex-row items-center justify-between mb-12">
+                <div class="flex items-center gap-4 mb-4 md:mb-0">
+                    <button onclick="navigateTo('home-page')" class="hoverable w-12 h-12 rounded-full bg-black text-white flex items-center justify-center hover:scale-110 transition-transform shadow-lg cursor-pointer">
+                        <i class="fas fa-arrow-left"></i>
+                    </button>
+                    <div><h1 class="font-heading text-4xl font-bold text-black">Ad Films</h1></div>
+                </div>
+            </div>
+            <div class="grid md:grid-cols-2 gap-10">
+                 <div class="bg-neutral-50 rounded-2xl overflow-hidden border border-neutral-200 shadow-sm hover:shadow-xl transition-all duration-300 group">
+                    <div class="aspect-video bg-black relative cursor-pointer overflow-hidden" onclick="loadVideo(this, 'liC84Ps2xWw')">
+                        <img src="https://img.youtube.com/vi/liC84Ps2xWw/maxresdefault.jpg" alt="Thumbnail" class="w-full h-full object-cover grayscale group-hover:grayscale-0 opacity-90 group-hover:opacity-100 transition-all duration-500">
+                        <div class="absolute inset-0 flex items-center justify-center"><i class="fas fa-play text-white text-4xl"></i></div>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="font-bold text-xl mb-1 text-black">Shield Belle</h3>
+                        <p class="text-xs font-bold text-neutral-400 uppercase tracking-widest">WOMEN SAFETY</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Designs Page -->
+    <div id="designs-page" class="hidden min-h-screen w-full bg-white transition-opacity duration-300">
+        <div class="max-w-7xl mx-auto p-6 md:p-12">
+             <div class="flex flex-col md:flex-row items-center justify-between mb-12">
+                <div class="flex items-center gap-4 mb-4 md:mb-0">
+                    <button onclick="navigateTo('home-page')" class="hoverable w-12 h-12 rounded-full bg-black text-white flex items-center justify-center hover:scale-110 transition-transform shadow-lg cursor-pointer">
+                        <i class="fas fa-arrow-left"></i>
+                    </button>
+                    <div><h1 class="font-heading text-4xl font-bold text-black">Designs</h1></div>
+                </div>
+            </div>
+             <div class="grid md:grid-cols-2 gap-10">
+                <div class="bg-neutral-50 rounded-2xl overflow-hidden border border-neutral-200 shadow-sm hover:shadow-xl transition-all duration-300 group">
+                    <a href="https://www.franklywearing.com/creator/cine_phile" target="_blank" class="block aspect-video bg-neutral-800 relative group overflow-hidden">
+                        <div class="absolute inset-0 flex items-center justify-center"><i class="fas fa-tshirt text-9xl text-white/20"></i></div>
+                        <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"><i class="fas fa-external-link-alt text-white text-4xl"></i></div>
+                    </a>
+                    <div class="p-6">
+                        <h3 class="font-bold text-xl mb-1 text-black">Cinephile Merch</h3>
+                         <p class="text-xs font-bold text-neutral-400 uppercase tracking-widest">APPAREL</p>
+                    </div>
+                </div>
+                 <div class="bg-neutral-50 rounded-2xl overflow-hidden border border-neutral-200 shadow-sm hover:shadow-xl transition-all duration-300 group">
+                    <a href="https://1drv.ms/p/c/df2fc6c12fdd54c3/IQDOi-X_6jeyRbwyduBNGuKmAXNaM41frmnxdPSGtd6nXJQ?e=7IYAG9" target="_blank" class="block aspect-video bg-neutral-800 relative group overflow-hidden">
+                        <div class="absolute inset-0 flex items-center justify-center"><i class="fas fa-file-powerpoint text-9xl text-white/20"></i></div>
+                        <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"><i class="fas fa-eye text-white text-4xl"></i></div>
+                    </a>
+                    <div class="p-6">
+                         <h3 class="font-bold text-xl mb-1 text-black">Porsche Presentation</h3>
+                         <p class="text-xs font-bold text-neutral-400 uppercase tracking-widest">BRAND STORY</p>
+                    </div>
+                </div>
+                 <div class="bg-neutral-50 rounded-2xl overflow-hidden border border-neutral-200 shadow-sm hover:shadow-xl transition-all duration-300 group">
+                    <a href="https://1drv.ms/p/c/df2fc6c12fdd54c3/IQAFaudxk5_iRYOzEaQepgF9AW0VokYRiJ_6sFcPd2ZoLm8?e=MJcWAC" target="_blank" class="block aspect-video bg-neutral-800 relative group overflow-hidden">
+                        <div class="absolute inset-0 flex items-center justify-center"><i class="fas fa-chart-pie text-9xl text-white/20"></i></div>
+                        <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"><i class="fas fa-eye text-white text-4xl"></i></div>
+                    </a>
+                    <div class="p-6">
+                         <h3 class="font-bold text-xl mb-1 text-black">Kodak Presentation</h3>
+                         <p class="text-xs font-bold text-neutral-400 uppercase tracking-widest">BUSINESS ANALYSIS</p>
+                    </div>
+                </div>
+             </div>
+        </div>
+    </div>
+
+    <!-- Code Repositories Page (NEW) -->
+    <div id="code-page" class="hidden min-h-screen w-full bg-white transition-opacity duration-300">
+        <div class="max-w-7xl mx-auto p-6 md:p-12">
+             <div class="flex flex-col md:flex-row items-center justify-between mb-12">
+                <div class="flex items-center gap-4 mb-4 md:mb-0">
+                    <button onclick="navigateTo('home-page')" class="hoverable w-12 h-12 rounded-full bg-black text-white flex items-center justify-center hover:scale-110 transition-transform shadow-lg cursor-pointer">
+                        <i class="fas fa-arrow-left"></i>
+                    </button>
+                    <div><h1 class="font-heading text-4xl font-bold text-black">Code Repositories</h1></div>
+                </div>
+            </div>
+             <div class="grid md:grid-cols-2 gap-10">
+                <!-- Market Gap Scanner -->
+                <div class="bg-neutral-50 rounded-2xl overflow-hidden border border-neutral-200 shadow-sm hover:shadow-xl transition-all duration-300 group">
+                    <a href="https://github.com/3bhu-1/market_gap_scanner" target="_blank" class="block aspect-video bg-neutral-800 relative group overflow-hidden">
+                        <div class="absolute inset-0 flex items-center justify-center"><i class="fas fa-chart-line text-9xl text-white/20"></i></div>
+                        <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"><i class="fab fa-github text-white text-4xl"></i></div>
+                    </a>
+                    <div class="p-6">
+                        <h3 class="font-bold text-xl mb-1 text-black">Market Gap Scanner</h3>
+                         <p class="text-xs font-bold text-neutral-400 uppercase tracking-widest">PYTHON • DATA ANALYSIS</p>
+                    </div>
+                </div>
+                <!-- Movie DNA -->
+                 <div class="bg-neutral-50 rounded-2xl overflow-hidden border border-neutral-200 shadow-sm hover:shadow-xl transition-all duration-300 group">
+                    <a href="https://github.com/3bhu-1/movie-dna" target="_blank" class="block aspect-video bg-neutral-800 relative group overflow-hidden">
+                        <div class="absolute inset-0 flex items-center justify-center"><i class="fas fa-dna text-9xl text-white/20"></i></div>
+                        <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"><i class="fab fa-github text-white text-4xl"></i></div>
+                    </a>
+                    <div class="p-6">
+                         <h3 class="font-bold text-xl mb-1 text-black">Movie DNA</h3>
+                         <p class="text-xs font-bold text-neutral-400 uppercase tracking-widest">PYTHON • CINEMA ANALYTICS</p>
+                    </div>
+                </div>
+             </div>
+        </div>
+    </div>
+
+    <!-- SCRIPTS -->
+    <script>
+        // --- 0. Preloader Logic ---
+        window.addEventListener('load', () => {
+            const bar = document.getElementById('loader-bar');
+            const preloader = document.getElementById('preloader');
+            const homePage = document.getElementById('home-page');
+
+            // 1. Fill bar
+            bar.style.width = '100%';
+
+            // 2. Hide preloader after delay
+            setTimeout(() => {
+                preloader.classList.add('loaded');
+                // 3. Reveal homepage
+                setTimeout(() => {
+                    homePage.style.opacity = '1';
+                }, 500);
+            }, 1800);
+        });
+
+        // --- 1. Navigation Logic ---
+        function navigateTo(pageId) {
+            ['home-page', 'short-films-page', 'ad-films-page', 'designs-page', 'code-page'].forEach(id => {
+                document.getElementById(id).classList.add('hidden');
+            });
+            document.getElementById(pageId).classList.remove('hidden');
+            window.scrollTo(0, 0);
+        }
+
+        // --- 2. Video Loader ---
+        function loadVideo(element, videoId) {
+            const iframe = document.createElement('iframe');
+            iframe.setAttribute('src', 'https://www.youtube.com/embed/' + videoId + '?autoplay=1');
+            iframe.setAttribute('title', 'YouTube video player');
+            iframe.setAttribute('frameborder', '0');
+            iframe.setAttribute('allow', 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture');
+            iframe.setAttribute('allowfullscreen', '');
+            iframe.className = 'w-full h-full';
+            element.innerHTML = '';
+            element.appendChild(iframe);
+            element.onclick = null;
+        }
+
+        // --- 3. Custom Cursor Logic ---
+        const cursorDot = document.querySelector('.cursor-dot');
+        const cursorOutline = document.querySelector('.cursor-outline');
+        
+        if (window.matchMedia("(min-width: 768px)").matches) {
+            window.addEventListener('mousemove', (e) => {
+                const posX = e.clientX;
+                const posY = e.clientY;
+
+                cursorDot.style.left = `${posX}px`;
+                cursorDot.style.top = `${posY}px`;
+
+                cursorOutline.animate({
+                    left: `${posX}px`,
+                    top: `${posY}px`
+                }, { duration: 500, fill: "forwards" });
+            });
+
+            const hoverables = document.querySelectorAll('a, button, .hoverable, .cursor-pointer');
+            hoverables.forEach(el => {
+                el.addEventListener('mouseenter', () => document.body.classList.add('hovering'));
+                el.addEventListener('mouseleave', () => document.body.classList.remove('hovering'));
+            });
+        }
+
+        // --- 4. Scroll Reveal Logic ---
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: "0px 0px -50px 0px"
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('is-visible');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.reveal-on-scroll').forEach(section => {
+            observer.observe(section);
+        });
+
+        // --- 5. 3D Tilt Effect for Project Cards ---
+        if (window.matchMedia("(min-width: 768px)").matches) {
+            const cards = document.querySelectorAll('.tilt-card');
+            
+            cards.forEach(card => {
+                card.addEventListener('mousemove', (e) => {
+                    const rect = card.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    
+                    const centerX = rect.width / 2;
+                    const centerY = rect.height / 2;
+                    
+                    const rotateX = ((y - centerY) / centerY) * -5;
+                    const rotateY = ((x - centerX) / centerX) * 5;
+
+                    card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02)`;
+                });
+
+                card.addEventListener('mouseleave', () => {
+                    card.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) scale3d(1, 1, 1)';
+                });
+            });
+        }
+    </script>
+</body>
+</html>
